@@ -141,17 +141,39 @@ def nimi_või_parooli_muutmine(list_:list):
     return list_
 
 
-import random
-str0=".,:;!_*-+()/#¤%&"
-str1 = '0123456789'
-str2 = 'qwertyuiopasdfghjklzxcvbnm'
-str3 = str2.upper()
-print(str3) 
-str4 = str0+str1+str2+str3
-print(str4)
-ls = list(str4)
-print(ls)
-random.shuffle(ls)
-print(ls)
-psword = ''.join([random.choice(ls) for x in range(12)])
-print(psword)
+def loe_failist(fail:str)->list:
+    """Funktsioon loeb tekst *.txt failist
+
+    """
+    f=open(fail,'r',encoding="utf-8")
+    järjend=[]
+    for rida in f:
+        järjend.append(rida.strip())
+    f.close()
+    return järjend
+
+def kirjuta_failisse(fail:str,järjend=[]):
+    """Salvestame tekst failisse
+
+    """
+    n=int(input("Mitu: "))
+    for i in range(n):
+        järjend.append(input(f"{i+1}. sõna: "))
+    f=open(fail,'a',encoding="utf-8")
+    for element in järjend:
+        f.write(element+"\n")
+    f.close()
+
+def ümber_kirjuta_fail(fail:str):
+    f=open(fail,'w')
+    text=input("Sisesta teksti: ")
+    f.write(text+"\n")
+    f.close()
+
+def failide_kustutamine()
+    failinimi=input("Mis fail tahad eemaldada?") #path.isdir("kaust")
+    if path.isfile(failinimi):
+        remove(failinimi)
+        print(f"Fail {failinimi} oli kustutatud")
+    else:
+        print(f"Fail {failinimi} puudub")
