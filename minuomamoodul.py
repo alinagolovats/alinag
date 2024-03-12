@@ -141,28 +141,21 @@ def nimi_või_parooli_muutmine(list_:list):
     return list_
 
 
-def loe_failist(fail:str)->list:
-    """Funktsioon loeb tekst *.txt failist
-
-    """
-    f=open(fail,'r',encoding="utf-8")
-    järjend=[]
-    for rida in f:
-        järjend.append(rida.strip())
-    f.close()
+def loe_failist(fail: str) -> list:
+    järjend = []
+    with open(fail, 'r', encoding="utf-8-sig") as f:
+        for rida in f:
+            järjend.append(rida.strip())
     return järjend
 
-def kirjuta_failisse(fail:str,järjend=[]):
-    """Salvestame tekst failisse
-
-    """
-    n=int(input("Mitu: "))
+def kirjuta_failisse(fail:str="Salasõnad.txt"):
+    Salasõnad = []
+    n = int(input("Mitu: "))
     for i in range(n):
-        järjend.append(input(f"{i+1}. sõna: "))
-    f=open(fail,'a',encoding="utf-8")
-    for element in järjend:
-        f.write(element+"\n")
-    f.close()
+        Salasõnad.append(input(f"{i + 1}. sõna: "))
+    with open(fail, 'w', encoding="utf-8-sig") as f:
+        for element in Salasõnad:
+            f.write(element + "\n")
 
 def ümber_kirjuta_fail(fail:str):
     f=open(fail,'w')
