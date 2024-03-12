@@ -1,5 +1,10 @@
-from minuomamoodul import*
-
+from küsimustik import*
+kus_vas={}
+küsimused,vastused=loe_ankeet("Ankeet.txt")
+print(küsimused)
+print(vastused)
+for i in range(len(küsimused)):
+    print("Küsimus on: "+küsimused[i]+" vastus on: "+vastused[i])
 failide_kustutamine()
 
 ümber_kirjuta_fail(input("Faili nimi: "))
