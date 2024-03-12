@@ -1,0 +1,21 @@
+def loe_ankeet(fail:str)->any:
+    fail=open(fail,"r",encoding="utf-8")
+    kus=[]
+    vas=[]
+    #kus_vas={}
+    for line in fail:
+        n=line.find(":")#,- разделитель
+        kus.append(line[0:n].strip())
+        vas.append(line[n+1:len(line)].strip())
+    fail.close()
+    return kus,vas
+
+def kirjuta_ankeeti(fail:str,küsimus:str,vastus:str):
+    fail=open(fail, "a", encoding="utf-8")
+    fail.write(f"{küsimus}:{vastus}\n")
+
+def test_ankeet(kus_vas:dict,n:int):
+    õiged = []
+    valed = []
+    for i in range(n):
+        nimi = input("Sisestage nimi: ")
