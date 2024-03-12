@@ -50,8 +50,8 @@
 
 from minuomamoodul import*
 
-salasõnad=["Parool.1"]
-kasutajanimed=["Kasutaja1"]
+salasõnad=loe_failist("Salasõnad.txt")
+kasutajanimed=loe_failist("Kasutajad.txt")
 while True:
     print(kasutajanimed)
     print(salasõnad)
@@ -60,27 +60,31 @@ while True:
     if vastus==1:
         print("Registreerimine")
         kasutajanimed,salasõnad=registreerimine(kasutajanimed,salasõnad)
+        def kirjuta_failisse(fail: str, järjend=[]):
+            with open(fail, 'w', encoding="utf-8") as f:
+                for element in järjend:
+                    f.write(element + "\n")
     elif vastus==2:
         print("Autoriseerimine")
         autoriseerimine(kasutajanimed,salasõnad)
     elif vastus==3:
         print("Nime või parooli muutmine")
-        vastus=input("Kas muudame nime või parooli")
-        if vastus=="nimi":
+    vastus=input("Kas muudame nime või parooli")
+    if vastus=="nimi":
             kasutajanimed=nimi_või_parooli_muutmine(kasutajanimed)
-        elif vastus=="parool":
+    elif vastus=="parool":
             salasõnad=nimi_või_parooli_muutmine(salasõnad)
-        elif vastus=="mõlemad":
-            print("Nimi muutmine")
-            kasutajanimed=nimi_või_parooli_muutmine(kasutajanimed)
-            print("Parooli muutmine")
-            salasõnad=nimi_või_parooli_muutmine(salasõnad)
+    elif vastus=="mõlemad":
+        print("Nimi muutmine")
+        kasutajanimed=nimi_või_parooli_muutmine(kasutajanimed)
+        print("Parooli muutmine")
+        salasõnad=nimi_või_parooli_muutmine(salasõnad)
     elif vastus==4:
         print("Unustanud parooli taastamine")
+
 
     elif vastus==5:
         print("Lõpetamine")
         break
     else:
         print("Tundmatu valik")
- 
