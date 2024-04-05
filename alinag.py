@@ -35,34 +35,34 @@
 
 import random
 
-print("Добро пожаловать в игру Камень, Ножницы, Бумага!")
-while True:
-    try:
-        num_rounds = int(input("Сколько раундов вы хотите сыграть? "))
-        break
-    except ValueError:
-        print("Неверный ввод. Введите целое число.")
-rounds_played = 0
+print("Добро пожаловать в игру 'Камень, ножницы, бумага'!")
+
+rounds = int(input("Сколько раундов вы хотите сыграть? "))
+
 user_wins = 0
 computer_wins = 0
-while rounds_played < num_rounds:
-    user_choice = input("Выберите камень, ножницы или бумагу (для выхода введите 'выход'): ").lower()
-    if user_choice == "выход":
-        break
-    if user_choice not in ["камень", "ножницы", "бумага"]:
-        print("Неверный ввод. Попробуйте еще раз.")
-        continue
-    computer_choice = random.choice(["камень", "ножницы", "бумага"])
+
+for round_num in range(1, rounds + 1):
+    print(f"\nРаунд {round_num}.")
+
+    user_choice = input("Выберите камень (к), ножницы (н) или бумагу (б): ")
+    while user_choice not in ['к', 'н', 'б']:
+        print("Неверный ввод. Попробуйте снова.")
+        user_choice = input("Выберите камень (к), ножницы (н) или бумагу (б): ")
+
+    computer_choice = random.choice(['к', 'н', 'б'])
+
+    print(f"Вы выбрали: {user_choice}")
     print(f"Компьютер выбрал: {computer_choice}")
+
     if user_choice == computer_choice:
         print("Ничья!")
-    elif (user_choice == "камень" and computer_choice == "ножницы") or \
-         (user_choice == "ножницы" and computer_choice == "бумага") or \
-         (user_choice == "бумага" and computer_choice == "камень"):
-        print("Вы выиграли!")
+    elif (user_choice == 'к' and computer_choice == 'н') or \
+         (user_choice == 'н' and computer_choice == 'б') or \
+         (user_choice == 'б' and computer_choice == 'к'):
+        print("Вы победили!")
         user_wins += 1
     else:
-        print("Компьютер выиграл!")
+        print("Вы проиграли.")
         computer_wins += 1
-    rounds_played += 1
 print(f"Игра завершена. Выигрышей игрока: {user_wins}, выигрышей компьютера: {computer_wins}.")
