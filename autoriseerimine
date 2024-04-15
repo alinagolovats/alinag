@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import simpledialog as sd
+from tkinter import messagebox as mb
 def tehtudvalik(var):
     f=var.get()
     if f:
@@ -7,6 +8,7 @@ def tehtudvalik(var):
     else:
         texbox.configure(show="*")
 def registreerimine():
+    mb.showinfo("Info","Kasutaja on registreeritud")
     kasutajanimi = kasutajanime_sisestus.get()
     parool = parooli_sisestus.get()
     if kasutajanimi and parool:
@@ -16,9 +18,9 @@ def registreerimine():
     else:
         print("Kasutajanimi või parool puudub!")
 def autoriseerimine():
+    mb.showinfo("Info","Kasutaja on autoriseeritud")
     kasutajanimi = kasutajanime_sisestus.get()
     parool = parooli_sisestus.get()
-
     with open("kasutajad.txt", "r") as f:
         kasutajad = f.readlines()
     kasutajad = [kasutaja.strip().split(",") for kasutaja in kasutajad]
@@ -26,6 +28,14 @@ def autoriseerimine():
         print("Kasutaja autoriseeritud!")
     else:
         print("Vale kasutajanimi või parool!")
+def muuda_parooli():
+    vana_parool = input("Sisestage vana parool: ")
+    uus_parool = input("Sisestage uus parool: ")
+    kinnita_parool = input("Kinnitage uus parool: ")
+    if uus_parool != kinnita_parool:
+        print("Uus parool ja tema kinnitused ei ühti.")
+        return
+    print("Parooli muutmine õnnestus.")
 aken = Tk()
 aken.geometry("480x600")
 aken.title("Приветствуем!")
@@ -37,6 +47,59 @@ pealkiri = Label(aken,
                  cursor="star",
                  font="Broadway 16",
                  justify=CENTER,
+                 height=2,width=28)
+raam = Frame(aken)
+kasutajanime_silt = Label(raam, text="Kasutajanimi:",bg="#b0c4de",fg="#111211",
+                              font="Times_New_Roman 14",
+                              width=14)
+parooli_silt = Label(raam, text="Parool:",bg="#b0c4de",
+                              fg="#111211",
+                              font="Britannic_Bold 14",
+                              width=14)
+pilt=PhotoImage(file="eye.png")
+kasutajanime_sisestus = Entry(raam,
+                              bg="#b0c4de",
+                              fg="#111211",
+                              font="Times_New_Roman 16",
+                              width=14)
+parooli_sisestus = Entry(raam,
+                         bg="#b0c4de",
+                         fg="#111211",
+                         font="Times_New_Roman 16",
+                         width=14,
+                         show="*")
+pilt=PhotoImage(file="eye.png")
+registreeri_nupp = Button(raam,
+                          text="Registreeri",
+                          bg="#d8bd8f",
+                          fg="#000000",
+                          font="Georgia 16",
+                          width=14,
+                          command=registreerimine)
+autoriseeri_nupp = Button(raam,
+                          text="Autoriseeri",
+                          bg="#d8bd8f",
+                          fg="#000000",
+                          font="Georgia 16",
+                          width=14,
+                          command=autoriseerimine)
+muuda_parooli_nupp = Button(raam,
+                            text="Muuda parooli",
+                            bg="#d8bd8f",
+                            fg="#000000",
+                            font="Georgia 15",
+                            width=14,
+                            command=muuda_parooli)
+pealkiri.pack() 
+raam.pack()
+kasutajanime_silt.grid(row=0,column=0)
+kasutajanime_sisestus.grid(row=0,column=1)
+parooli_silt.grid(row=1,column=0)
+parooli_sisestus.grid(row=1,column=1)
+registreeri_nupp.grid(row=2,column=0)
+autoriseeri_nupp.grid(row=2,column=1)
+muuda_parooli_nupp.grid(row=3,column=1)
+aken.mainloop()
                  height=2,width=28)
 raam = Frame(aken)
 kasutajanime_silt = Label(raam, text="Kasutajanimi:",bg="#b0c4de",fg="#111211",
