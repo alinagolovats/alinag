@@ -35,34 +35,34 @@
 
 import random
 
-print("Добро пожаловать в игру 'Камень, ножницы, бумага'!")
+print("Tere tulemast mängu 'Kivi, paber, käärid'!")
 
-rounds = int(input("Сколько раундов вы хотите сыграть? "))
+rounds = int(input("Mitu vooru sa tahad mängida?"))
 
 user_wins = 0
 computer_wins = 0
 
 for round_num in range(1, rounds + 1):
-    print(f"\nРаунд {round_num}.")
+    print(f"\nÜmmargune {round_num}.")
 
-    user_choice = input("Выберите камень (к), ножницы (н) или бумагу (б): ")
-    while user_choice not in ['к', 'н', 'б']:
-        print("Неверный ввод. Попробуйте снова.")
-        user_choice = input("Выберите камень (к), ножницы (н) или бумагу (б): ")
+    user_choice = input("Valige kivi, käärid või paber: ")
+    while user_choice not in ['kivi', 'käärid', 'paber']:
+        print("Vigane sisestus. Proovi uuesti.")
+        user_choice = input("Valige kivi, käärid või paber: ")
 
-    computer_choice = random.choice(['к', 'н', 'б'])
+    computer_choice = random.choice(['kivi', 'käärid', 'paber'])
 
-    print(f"Вы выбрали: {user_choice}")
-    print(f"Компьютер выбрал: {computer_choice}")
+    print(f"Te valite: {user_choice}")
+    print(f"Arvuti valis: {computer_choice}")
 
     if user_choice == computer_choice:
-        print("Ничья!")
-    elif (user_choice == 'к' and computer_choice == 'н') or \
-         (user_choice == 'н' and computer_choice == 'б') or \
-         (user_choice == 'б' and computer_choice == 'к'):
-        print("Вы победили!")
+        print("Loosimine!")
+    elif (user_choice == 'kivi' and computer_choice == 'käärid') or \
+         (user_choice == 'käärid' and computer_choice == 'paber') or \
+         (user_choice == 'paber' and computer_choice == 'kivi'):
+        print("Sina võitsid!")
         user_wins += 1
     else:
-        print("Вы проиграли.")
+        print("Sa kaotasid.")
         computer_wins += 1
-print(f"Игра завершена. Выигрышей игрока: {user_wins}, выигрышей компьютера: {computer_wins}.")
+print(f"Mäng läbi. Mängija võidab: {user_wins}, võidab arvuti: {computer_wins}.")
