@@ -1,54 +1,151 @@
 from tkinter import *
-from tkinter import simpledialog as sd
 from tkinter import messagebox as mb
-def tehtudvalik(var):
-    f=var.get()
-    if f:
-        texbox.configure(show="")
-    else:
-        texbox.configure(show="*")
-def registreerimine():
-    mb.showinfo("Info","Kasutaja on registreeritud")
-    kasutajanimi = kasutajanime_sisestus.get()
-    parool = parooli_sisestus.get()
-    if kasutajanimi and parool:
-        with open("kasutajad.txt", "a") as f:
-            f.write(f"{kasutajanimi},{parool}\n")
-        print("Kasutaja registreeritud!")
-    else:
-        print("Kasutajanimi või parool puudub!")
+from email.message import EmailMessage
+import smtplib
+
+praegune_parool = "123"
+
+def muuda_parooli():
+    global raam_muuda_parooli
+    raam_muuda_parooli = Toplevel(root)
+    raam_muuda_parooli.title("Parooli muutmine")
+    raam_muuda_parooli.geometry("300x200")
+    raam_muuda_parooli.configure(bg="#ffdab9")
+    
+    vana_parool_silt = Label(raam_muuda_parooli, text="Vana parool:", bg="#ffdab9")
+    vana_parool_silt.pack()
+    vana_parool_entry = Entry(raam_muuda_parooli, show="*")
+    vana_parool_entry.pack()
+
+    uus_parool_silt = Label(raam_muuda_parooli, text="Uus parool:", bg="#ffdab9")
+    uus_parool_silt.pack()
+    uus_parool_entry = Entry(raam_muuda_parooli, show="*")
+    uus_parool_entry.pack()
+
+    kinnita_parool_silt = Label(raam_muuda_parooli, text="Kinnita uut parooli:", bg="#ffdab9")
+    kinnita_parool_silt.pack()
+    kinnita_parool_entry = Entry(raam_muuda_parooli, show="*")
+    kinnita_parool_entry.pack()
+
+    muuda_nupp = Button(raam_muuda_parooli, text="Muuda parooli", command=lambda: muuda_parool(vana_parool_entry, uus_parool_entry, kinnita_parool_entry))
+    muuda_nupp.pack()
+
+def muuda_parool(vana_parool_entry, uus_parool_entry, kinnita_parool_entry):
+    global praegune_parool 
+    vana_parool = vana_parool_entry.get()
+    uus_parool = uus_parool_entry.get()
+    kinnita_parool = kinnita_parool_entry.get()
+    
+    with open("kasutajad.txt", "r") as f:
+        kasutajad = f.readlines()
+        
+    for kasutaja in kasutajad:
+
+        kasutaja_parts = kasutaja.strip().split(",")
+        
+        if len(kasutaja_parts) == 2:
+            kasutajanimi, parool = kasutaja_parts
+            if parool == praegune_parool:
+                kasutajad[kasutajad.index(kasutaja)] = f"{kasutajanimi},{uus_parool}\n"
+                with open("kasutajad.txt", "w") as f:
+                    f.writelines(kasutajad)
+                praegune_parool = uus_parool
+                mb.showinfo("Edu", "Parool edukalt muudetud!")
+                raam_muuda_parooli.destroy()
+                saada_email_window()
+                return
+    mb.showerror("Viga", "Praegune kasutaja ei leitud!")
+
+def saada_email_window():
+    saada_raam = Toplevel(root)
+    saada_raam.title("Emaili saatmine")
+    saada_raam.geometry("300x150")
+    saada_raam.configure(bg="#ffdab9")
+    
+    result_email_silt = Label(saada_raam, text="Saaja email:", bg="#ffdab9")
+    result_email_silt.pack()
+    result_email_entry = Entry(saada_raam)
+    result_email_entry.pack()
+
+    password_silt = Label(saada_raam, text="Parool:", bg="#ffdab9")
+    password_silt.pack()
+    password_entry = Entry(saada_raam, show="*")
+    password_entry.pack()
+
+    saada_nupp = Button(saada_raam, text="Saada", command=lambda: saada_email_with_results(result_email_entry.get(), password_entry.get()))
+    saada_nupp.pack()
+
+def saada_email_with_results(result_email, password=None):
+    smtp_server = "smtp.gmail.com"
+    port = 587
+    msg = EmailMessage()
+    msg["Subject"] = "INFO!"
+    msg["From"] = "alinagolovats@gmail.com"
+    msg["To"] = "alinagolovats@gmail.com"
+
+    content = "Olete edukalt registreeritud:\n\n"
+    msg.set_content(content)
+    
+    try:
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls()
+            if password:
+                server.login(msg["From"], password)
+            server.send_message(msg)
+        mb.showinfo("Email saadetud","Email registreerimisandmetega edukalt saadetud")      
+    except Exception as e:
+        mb.showerror("Viga", f"Viga saatmisel: {e}")
+
 def autoriseerimine():
-    mb.showinfo("Info","Kasutaja on autoriseeritud")
     kasutajanimi = kasutajanime_sisestus.get()
     parool = parooli_sisestus.get()
     with open("kasutajad.txt", "r") as f:
         kasutajad = f.readlines()
     kasutajad = [kasutaja.strip().split(",") for kasutaja in kasutajad]
     if [kasutajanimi, parool] in kasutajad:
-        print("Kasutaja autoriseeritud!")
+        mb.showinfo("Info","Kasutaja on autoriseeritud")
     else:
-        print("Vale kasutajanimi või parool!")
-def muuda_parooli():
-    vana_parool = input("Sisestage vana parool: ")
-    uus_parool = input("Sisestage uus parool: ")
-    kinnita_parool = input("Kinnitage uus parool: ")
-    if uus_parool != kinnita_parool:
-        print("Uus parool ja tema kinnitused ei ühti.")
-        return
-    print("Parooli muutmine õnnestus.")
-aken = Tk()
-aken.geometry("480x600")
-aken.title("Приветствуем!")
-aken.configure(bg="#ffdab9")
-pealkiri = Label(aken,
+        mb.showinfo("Info","Vale kasutajanimi või parool!")
+        
+def registreerimine():
+    kasutajanimi = kasutajanime_sisestus.get()
+    parool = parooli_sisestus.get()
+    with open("kasutajad.txt", "r") as f:
+        kasutajad = f.readlines()
+    kasutajad = [kasutaja.strip().split(",") for kasutaja in kasutajad]
+    if any(kasutajanimi == kasutaja[0] for kasutaja in kasutajad):
+        mb.showerror("Viga", "Te olete juba registreeritud!")
+    else:
+        if kasutajanimi and parool:
+            with open("kasutajad.txt", "a") as f:
+                f.write(f"{kasutajanimi},{parool}\n")
+            mb.showinfo("Info", "Kasutaja on registreeritud!")
+            print("Kasutaja registreeritud!")
+        else:
+            mb.showerror("Viga", "Kasutajanimi või parool puudub!")
+
+root = Tk()
+root.title("Registreerimine/Autoriseerimine")
+root.geometry("480x600")
+root.configure(bg="#ffdab9")
+
+pealkiri = Label(root,
                  text="Registreerimine/Autoriseerimine",
                  bg="#dda0dd",
                  fg="#000000",
                  cursor="star",
                  font="Broadway 16",
                  justify=CENTER,
-                 height=2,width=28)
-raam = Frame(aken)
+                 height=2,
+                 width=28)
+pealkiri.pack() 
+
+raam = Frame(root)
+kasutajanime_silt = Label(raam, text="Kasutajanimi:")
+parooli_silt = Label (raam, text="Parool:")
+email_silt = Label(raam, text="Email: ")
+sender_email_silt = Label(raam, text="Saatja Email:") 
+
 kasutajanime_silt = Label(raam, text="Kasutajanimi:",bg="#b0c4de",fg="#111211",
                               font="Times_New_Roman 14",
                               width=14)
@@ -56,7 +153,6 @@ parooli_silt = Label(raam, text="Parool:",bg="#b0c4de",
                               fg="#111211",
                               font="Britannic_Bold 14",
                               width=14)
-pilt=PhotoImage(file="eye.png")
 kasutajanime_sisestus = Entry(raam,
                               bg="#b0c4de",
                               fg="#111211",
@@ -68,7 +164,6 @@ parooli_sisestus = Entry(raam,
                          font="Times_New_Roman 16",
                          width=14,
                          show="*")
-pilt=PhotoImage(file="eye.png")
 registreeri_nupp = Button(raam,
                           text="Registreeri",
                           bg="#d8bd8f",
@@ -90,7 +185,7 @@ muuda_parooli_nupp = Button(raam,
                             font="Georgia 15",
                             width=14,
                             command=muuda_parooli)
-pealkiri.pack() 
+
 raam.pack()
 kasutajanime_silt.grid(row=0,column=0)
 kasutajanime_sisestus.grid(row=0,column=1)
@@ -99,55 +194,5 @@ parooli_sisestus.grid(row=1,column=1)
 registreeri_nupp.grid(row=2,column=0)
 autoriseeri_nupp.grid(row=2,column=1)
 muuda_parooli_nupp.grid(row=3,column=1)
-aken.mainloop()
-                 height=2,width=28)
-raam = Frame(aken)
-kasutajanime_silt = Label(raam, text="Kasutajanimi:",bg="#b0c4de",fg="#111211",
-                              font="Times_New_Roman 14",
-                              width=14)
-parooli_silt = Label(raam, text="Parool:",bg="#b0c4de",
-                              fg="#111211",
-                              font="Britannic_Bold 14",
-                              width=14)
-pilt=PhotoImage(file="eye.png")
-kasutajanime_sisestus = Entry(raam,
-                              bg="#b0c4de",
-                              fg="#111211",
-                              font="Times_New_Roman 16",
-                              width=14)
-parooli_sisestus = Entry(raam,
-                         bg="#b0c4de",
-                         fg="#111211",
-                         font="Times_New_Roman 16",
-                         width=14,
-                         show="*")
-pilt=PhotoImage(file="eye.png")
-registreeri_nupp = Button(raam,
-                          text="Registreeri",
-                          bg="#d8bd8f",
-                          fg="#000000",
-                          font="Georgia 16",
-                          width=14,
-                          command=registreerimine)
-autoriseeri_nupp = Button(raam,
-                          text="Autoriseeri",
-                          bg="#d8bd8f",
-                          fg="#000000",
-                          font="Georgia 16",
-                          width=14,
-                          command=autoriseerimine)
-muuda_parooli_nupp = Button(raam,
-                            text="Muuda parooli",
-                            bg="#d8bd8f",
-                            fg="#000000",
-                            font="Georgia 16",
-                            width=14)
-pealkiri.pack() 
-raam.pack()
-kasutajanime_silt.grid(row=0,column=0)
-kasutajanime_sisestus.grid(row=0,column=1)
-parooli_silt.grid(row=1,column=0)
-parooli_sisestus.grid(row=1,column=1)
-registreeri_nupp.grid(row=2,column=0)
-autoriseeri_nupp.grid(row=2,column=1)
-aken.mainloop()
+
+root.mainloop()    
