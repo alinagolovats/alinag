@@ -83,7 +83,7 @@ def saada_email_with_results(result_email, password=None):
     msg["From"] = "alinagolovats@gmail.com"
     msg["To"] = "alinagolovats@gmail.com"
 
-    content = "Olete edukalt registreeritud:\n\n"
+    content = "Olete edukalt registreeritud!\n\n"
     msg.set_content(content)
     
     try:
@@ -195,4 +195,5 @@ registreeri_nupp.grid(row=2,column=0)
 autoriseeri_nupp.grid(row=2,column=1)
 muuda_parooli_nupp.grid(row=3,column=1)
 
-root.mainloop()    
+root.mainloop()      
+
