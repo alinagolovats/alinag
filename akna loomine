@@ -1,0 +1,56 @@
+import pygame
+pygame.init()
+
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 400
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Minu PyGame mäng")
+
+background_image = pygame.image.load("C:\\Users\\opilane\\Pictures\\4.png").convert()
+
+font = pygame.font.SysFont('Arial', 24)
+text_color = (0, 0, 0)
+text_surface = font.render('Tere, olen Alina', True, text_color)
+
+cloud_color = (255, 255, 255)
+cloud_border_color = (0, 0, 0)
+cloud_border_width = 2
+cloud_padding = 20
+cloud_position = (50, 50)  
+text_position = (cloud_position[0] + cloud_padding, cloud_position[1] + cloud_padding)
+
+cloud_width = text_surface.get_width() + 2 * cloud_padding
+cloud_height = text_surface.get_height() + 2 * cloud_padding
+
+def draw_rounded_rect(surface, color, rect, radius):
+    pygame.draw.rect(surface, color, rect, border_radius=radius)
+    pygame.draw.rect(surface, cloud_border_color, rect, cloud_border_width, border_radius=radius)
+
+def draw_cloud(surface, text_surface, cloud_position, cloud_width, cloud_height, cloud_color, cloud_border_color):
+    cloud_rect = pygame.Rect(cloud_position[0], cloud_position[1], cloud_width, cloud_height)
+    draw_rounded_rect(surface, cloud_color, cloud_rect, 20)
+    
+    tail_points = [
+        (cloud_position[0] + cloud_width // 2 - 10, cloud_position[1] + cloud_height),
+        (cloud_position[0] + cloud_width // 2 + 10, cloud_position[1] + cloud_height),
+        (cloud_position[0] + cloud_width // 2, cloud_position[1] + cloud_height + 20)
+    ]
+    pygame.draw.polygon(surface, cloud_color, tail_points)
+    pygame.draw.polygon(surface, cloud_border_color, tail_points, cloud_border_width)
+    
+    surface.blit(text_surface, text_position)
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.blit(background_image, (0, 0))
+
+    draw_cloud(screen, text_surface, cloud_position, cloud_width, cloud_height, cloud_color, cloud_border_color)
+
+    pygame.display.flip()
+
+pygame.quit()
