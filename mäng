@@ -1,0 +1,138 @@
+import pygame
+import sys
+import random
+
+pygame.init()
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Püüdke muna!"
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
+WOLF_WIDTH = 150
+WOLF_HEIGHT = 150
+WOLF_SPEED = 10
+
+EGG_WIDTH = 50
+EGG_HEIGHT = 50
+EGG_SPEED = 5
+EGG_SPAWN_INTERVAL = 60 
+
+MISS_LIMIT = 10
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption(SCREEN_TITLE)
+
+wolf_img = pygame.image.load('C:\\Users\\opilane\\Pictures\\wolf.png').convert_alpha()
+wolf_img = pygame.transform.scale(wolf_img, (WOLF_WIDTH, WOLF_HEIGHT))
+
+background_img = pygame.image.load('C:\\Users\\opilane\\Pictures\\fon.png')
+background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+egg_img = pygame.image.load('C:\\Users\\opilane\\Pictures\\egg.png').convert_alpha()
+egg_img = pygame.transform.scale(egg_img, (EGG_WIDTH, EGG_HEIGHT))
+
+def draw_wolf(x, y):
+    screen.blit(wolf_img, (x, y))
+
+def draw_egg(x, y):
+    screen.blit(egg_img, (x, y))
+
+def check_catch(wolf_x, wolf_y, egg_x, egg_y):
+    if (egg_x >= wolf_x and egg_x <= wolf_x + WOLF_WIDTH) and (egg_y >= wolf_y and egg_y <= wolf_y + WOLF_HEIGHT):
+        return True
+    return False
+
+def game_over_screen():
+    screen.fill(BLACK)
+    
+    font_game_over = pygame.font.Font(None, 72)
+    text_game_over = font_game_over.render("Игра окончена", True, RED)
+    screen.blit(text_game_over, (SCREEN_WIDTH // 2 - text_game_over.get_width() // 2, SCREEN_HEIGHT // 2 - text_game_over.get_height() // 2))
+    
+    font_continue = pygame.font.Font(None, 36)
+    text_continue = font_continue.render("Нажмите пробел, чтобы сыграть еще", True, WHITE)
+    screen.blit(text_continue, (SCREEN_WIDTH // 2 - text_continue.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
+    
+    pygame.display.flip()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    main_game()  
+
+def main_game():
+    global EGG_SPEED, EGG_SPAWN_INTERVAL 
+
+    wolf_x = SCREEN_WIDTH // 2 - WOLF_WIDTH // 2
+    wolf_y = SCREEN_HEIGHT - WOLF_HEIGHT - 20
+
+    eggs = []
+    score = 0
+    egg_spawn_counter = 0
+    missed_eggs = 0  
+
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                sys.exit()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and wolf_x > 0:
+            wolf_x -= WOLF_SPEED
+        if keys[pygame.K_RIGHT] and wolf_x < SCREEN_WIDTH - WOLF_WIDTH:
+            wolf_x += WOLF_SPEED
+
+        egg_spawn_counter += 1
+        if egg_spawn_counter >= EGG_SPAWN_INTERVAL:
+            egg_x = random.randint(0, SCREEN_WIDTH - EGG_WIDTH)
+            egg_y = -EGG_HEIGHT
+            eggs.append((egg_x, egg_y))
+            egg_spawn_counter = 0
+
+        for i in range(len(eggs) - 1, -1, -1):
+            eggs[i] = (eggs[i][0], eggs[i][1] + EGG_SPEED)
+            if eggs[i][1] > SCREEN_HEIGHT:
+                eggs.pop(i)
+                missed_eggs += 1
+                if missed_eggs >= MISS_LIMIT:
+                    running = False 
+
+        for egg in eggs:
+            if check_catch(wolf_x, wolf_y, egg[0], egg[1]):
+                eggs.remove(egg)
+                score += 1
+                if score % 10 == 0:
+                    EGG_SPEED += 1
+
+        screen.blit(background_img, (0, 0))
+
+        draw_wolf(wolf_x, wolf_y)
+        for egg in eggs:
+            draw_egg(egg[0], egg[1])
+
+        font = pygame.font.Font(None, 36)
+        text_score = font.render(f"Счет: {score}", True, GREEN)
+        screen.blit(text_score, (10, 10))
+        text_missed = font.render(f"Пропущено: {missed_eggs}/{MISS_LIMIT}", True, RED)
+        screen.blit(text_missed, (10, 50))
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    game_over_screen()
+
+main_game()
