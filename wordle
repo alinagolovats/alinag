@@ -1,0 +1,118 @@
+from tkinter import messagebox
+import tkinter as tk
+import random
+
+root = tk.Tk()
+root.title('Wordle')
+root.geometry("1152x864")
+root.configure(bg="#4c4c4c")
+frame = tk.Frame(root)
+frame.pack()
+green = '#27e512'
+yellow = '#e8ef0e'
+gray = '#4c4c4c'
+font = 'Verdana, 38'
+letters = []
+letter_count = 0
+guess = ''
+words = []
+winner = False
+
+with open('words.txt', 'r') as file:
+    data = file.readlines()
+    for i in data:
+        words.append(i.strip())
+
+def võit_läbivaatus(winner):
+    if not winner:
+        title = 'Kaotasid'
+        message = f'Sõna oli {word}'
+    else:
+        title = 'Võitsid'
+        message = 'Tubli töö, arvasid sõna ära {} katsega'.format(int(letter_count / 5))
+    play_again = messagebox.askquestion(title=title, message=f'{message}.\nKas tahad uuesti mängida?')
+    if play_again == 'yes':
+        algus()
+    else:
+        root.destroy()
+        quit()
+
+def lähtestada():
+    for i in range(5):
+        letters[letter_count + i]['text'] = ' '
+
+def sõna_läbivaatus(guess):
+    global winner
+    btn_index = letter_count - 5
+    for i, letter in enumerate(guess):
+        if letter == word[i]:
+            letters[btn_index + i]['bg'] = green
+            letters[btn_index + i]['activebackground'] = green
+        elif letter in word:
+            if guess.count(letter) >= 1 and guess.count(letter) == word.count(letter):
+                letters[btn_index + i]['bg'] = yellow
+                letters[btn_index + i]['activebackground'] = yellow
+            else:
+                letters[btn_index + i]['bg'] = gray
+                letters[btn_index + i]['activebackground'] = gray
+        else:
+            letters[btn_index + i]['bg'] = gray
+            letters[btn_index + i]['activebackground'] = gray
+    if guess == word:
+        winner = True
+        võit_läbivaatus(winner)
+
+def nuppid(letter):
+    global letter_count, guess
+    if not winner:
+        if letter in 'abcdefghijklmnopqrstuvwxyzõäöüšž':
+            if letter_count <= 24: 
+                letters[letter_count]['text'] = letter.upper()
+                guess = guess + letter.upper()
+                letter_count += 1
+                if letter_count % 5 == 0:
+                    if guess.lower() in words:
+                        sõna_läbivaatus(guess)
+                        guess = ''
+                    else:
+                        letter_count -= 5
+                        lähtestada()
+                        guess = ''
+            if letter_count == 25: 
+                võit_läbivaatus(winner)
+
+def klaviatuur_nuppid(keyboard_frame):
+    keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZŠŽÄÖÜÕ"
+    for key in keys:
+        tk.Button(keyboard_frame, text=key, width=3, command=lambda k=key: nuppid(k.lower())).pack(side=tk.LEFT, padx=5)
+
+def algus():
+    global frame, letter_count, winner, guess, word, keyboard_frame
+    frame.destroy()
+    frame = tk.Frame(root)
+    frame.pack()
+    letters.clear()
+    letter_count = 0
+    winner = False
+    guess = ''
+    word = random.choice(words).upper()
+    for row in range(5): 
+        for col in range(5):
+            btn = tk.Button(frame, text=' ', width=3, bg='white',
+                            activebackground='white', font=font)
+            btn.grid(row=row, column=col, padx=5, pady=7)
+            letters.append(btn)
+    if 'keyboard_frame' in globals():
+        keyboard_frame.destroy()
+    keyboard_frame = tk.Frame(root)
+    keyboard_frame.pack(pady=10)
+    klaviatuur_nuppid(keyboard_frame)
+
+    menu = tk.Menu(root)
+    root.config(menu=menu)
+    new_game = tk.Menu(menu, tearoff=0)
+    menu.add_cascade(label='Mäng', menu=new_game)
+    new_game.add_command(label='Uus Mäng', command=algus)
+
+algus()
+root.mainloop()
